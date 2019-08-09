@@ -33,6 +33,8 @@ class King(Piece):
                 if p.color == self.enemy_color:
                     self.piece_to_kill = p
                     self.pieces_to_kill = self.get_enemy_pieces(whites, blacks)
+                else:
+                    return False
 
         prev_row, prev_col, prev_sq = self.current_row, self.current_col, self.current_square
         self.set_position(row, col, squares[row][col])

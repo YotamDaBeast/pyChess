@@ -133,16 +133,10 @@ class Game:
                 if self.chosen and self.chosen.current_row == row_num and self.chosen.current_col == square_num:
                     color = (255, 56, 56)
                 
-                elif row_num % 2 == 0:
-                    if square_num % 2 == 0:
-                        color = (235, 220, 179)
-                    else:
-                        color = (183, 135, 99)
+                if (square_num % 2 == 0 and row_num % 2 == 0) or (square_num % 2 != 0 and row_num % 2 != 0):
+                    color = (235, 220, 179)
                 else:
-                    if square_num % 2 == 0:
-                        color = (183, 135, 99)
-                    else:
-                        color = (235, 220, 179)
+                    color = (183, 135, 99)
                 
                 pygame.draw.rect(self.win, color, square)
 

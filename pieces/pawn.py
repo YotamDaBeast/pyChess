@@ -123,7 +123,7 @@ class Pawn(Piece):
 
             for r_num, r in enumerate(self.rects):
                 pygame.draw.rect(win, (255, 255, 255), r)
-                win.blit(self.possible_selections[r_num].img, (r.left+10, r.top + 10))
+                win.blit(self.possible_selections[r_num].img, (r.left, r.top))
 
             win.blit(self.font.render("Choose a promotion", True, (255, 255, 255)), (self.wide_rect.left + 20, self.wide_rect.top + 15))
 

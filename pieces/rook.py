@@ -35,7 +35,6 @@ class Rook(Piece):
             for p in (whites + blacks):
                 if p is not self and p.color == self.enemy_color:
                     if p.current_col == col and p.current_row == row:
-                        print("yes for " + str(type(p)))
                         self.piece_to_kill = p
                         self.pieces_to_kill = self.get_enemy_pieces(whites, blacks)
                         return True

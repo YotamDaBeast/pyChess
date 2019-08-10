@@ -133,14 +133,14 @@ class Game:
                 
                 elif row_num % 2 == 0:
                     if square_num % 2 == 0:
-                        color = (255, 255, 255)
+                        color = (235, 220, 179)
                     else:
-                        color = (0, 0, 0)
+                        color = (183, 135, 99)
                 else:
                     if square_num % 2 == 0:
-                        color = (0, 0, 0)
+                        color = (183, 135, 99)
                     else:
-                        color = (255, 255, 255)
+                        color = (235, 220, 179)
                 
                 pygame.draw.rect(self.win, color, square)
 

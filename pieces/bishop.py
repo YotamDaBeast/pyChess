@@ -7,7 +7,7 @@ class Bishop(Piece):
         super().__init__(color)
 
         self.queen = None
-        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_bishop.png")), (30, 30))
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_bishop.png")), (50, 50))
 
     def check_valid_move(self, whites, blacks, row, col):
 

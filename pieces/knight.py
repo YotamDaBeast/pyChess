@@ -6,7 +6,7 @@ class Knight(Piece):
     def __init__(self, color):
         super().__init__(color)
 
-        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_knight.png")), (30, 30))
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_knight.png")), (50, 50))
 
     def check_valid_move(self, whites, blacks, row, col):
         valid_moves = [(self.current_row + 2, self.current_col + 1), (self.current_row + 2, self.current_col - 1), (self.current_row + 1, self.current_col + 2)

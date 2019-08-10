@@ -20,7 +20,7 @@ class Piece:
             self.enemy_color = colors[0]
 
     def draw(self, win):
-        win.blit(self.img, (self.current_square.left+10, self.current_square.top + 10))
+        win.blit(self.img, (self.current_square.left, self.current_square.top))
 
     def click(self, win, x, y, square):
         return x <= square.right and x >= square.left and y >= square.top and y <= square.bottom

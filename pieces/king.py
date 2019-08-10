@@ -7,7 +7,7 @@ class King(Piece):
         super().__init__(color)
 
         self.checking = False
-        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_king.png")), (30, 30))
+        self.img = pygame.transform.scale(pygame.image.load(os.path.join("assets/pieces/" + self.color, self.color + "_king.png")), (50, 50))
 
     def move(self, win, x, y, squares, whites, blacks):
         for row_num, row in enumerate(squares):

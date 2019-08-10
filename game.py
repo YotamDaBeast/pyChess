@@ -133,7 +133,7 @@ class Game:
                 if self.chosen and self.chosen.current_row == row_num and self.chosen.current_col == square_num:
                     color = (255, 56, 56)
                 
-                if (square_num % 2 == 0 and row_num % 2 == 0) or (square_num % 2 != 0 and row_num % 2 != 0):
+                elif (square_num % 2 == 0 and row_num % 2 == 0) or (square_num % 2 != 0 and row_num % 2 != 0):
                     color = (235, 220, 179)
                 else:
                     color = (183, 135, 99)

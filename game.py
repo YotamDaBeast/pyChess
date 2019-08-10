@@ -169,9 +169,15 @@ class Game:
 
         if Game.rules_check:
             if self.chosen:
-                if self.chosen.click(self.win, clk_x, clk_y, self.chosen.current_square):
-                    self.chosen = None
-                    return True
+                if self.chosen.color == colors[0]:
+                    pieces = self.white_pieces
+                else:
+                    pieces = self.black_pieces
+
+                for p in pieces:
+                    if p.click(self.win, clk_x, clk_y, p.current_square):
+                        self.chosen = p
+                        return True
             else:
                 if self.current_player == 0:
                     # Check white

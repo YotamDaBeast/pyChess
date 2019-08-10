@@ -31,6 +31,8 @@ class Game:
         self.big_font = pygame.font.SysFont('Comic Sans MS', 30, bold=True)
         self.big_update_text = "Chess Game"
         self.small_font = pygame.font.SysFont('Comic Sans MS', 20, bold=True)
+        pygame.display.set_caption("pyChess")
+        pygame.display.set_icon(pygame.transform.scale(pygame.image.load("assets/pieces/black/black_king.png"), (32, 32)))
         
 
     def run(self):

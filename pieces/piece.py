@@ -33,30 +33,40 @@ class Piece:
                 if self.click(win, x, y, sq):
                     prev_row, prev_col, prev_sq = self.current_row, self.current_col, self.current_square
                     self.set_position(row_num, sq_num, sq)
-
-                    print(str(self.check_for_check(whites, blacks, row_num, sq_num, win, squares)))
                     
-                    if self.check_for_check(whites, blacks, row_num, sq_num, win, squares):
+                    if self.check_for_check(whites, blacks):
                         threading.Thread(target=self.set_temp_message, args=("You can't move to a check position",)).start()
                         self.set_position(prev_row, prev_col, prev_sq)
                         return False
 
                     self.set_position(prev_row, prev_col, prev_sq)
 
+                    self.handle_check_messages(whites, blacks)
+
                     if self.check_valid_move(whites, blacks, row_num, sq_num):
                         if self.pieces_to_kill and self.piece_to_kill:
                             self.kill()
                         self.set_position(row_num, sq_num, sq)
 
-                        if self.check_for_check(whites, blacks, row_num, sq_num, win, squares):
-                            self.set_check_message()
-                        else:
-                            self.cancel_message()
-
+                        self.handle_check_messages(whites, blacks)
+                        
                         return True
 
         return False
 
+
+    def handle_check_messages(self, whites, blacks):
+        from game import Game
+
+        for p in (whites + blacks):
+            if p.check_for_check(whites, blacks):
+                if p.color == colors[0]:
+                    Game.small_update_text = white_check_message
+                else:
+                    Game.small_update_text = black_check_message
+                return
+
+        Game.small_update_text = ""
 
     def cancel_message(self):
         from game import Game
@@ -65,7 +75,7 @@ class Piece:
         elif self.color == colors[0] and Game.small_update_text == black_check_message:
             Game.small_update_text = ""
         
-    def check_for_check(self, whites, blacks, row, col, win, squares):
+    def check_for_check(self, whites, blacks):
         from .king import King
 
         if self.color == colors[0]:
@@ -89,16 +99,6 @@ class Piece:
 
     def check_valid_move(self, whites, blacks, row, col):
         pass
-
-    def set_check_message(self):
-        from game import Game
-
-        if self.enemy_color == colors[0]:
-            Game.small_update_text = white_check_message
-            Game.small_text_color = (255, 255, 255)
-        elif self.enemy_color == colors[1]:
-            Game.small_update_text = black_check_message
-            Game.small_text_color = (0, 0, 0)
 
     def kill(self):
         self.pieces_to_kill.remove(self.piece_to_kill)

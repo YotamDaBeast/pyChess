@@ -2,7 +2,7 @@
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
-from pieces.piece import Piece, colors
+from pieces.piece import Piece, colors, black_check_message
 from pieces.bishop import Bishop
 from pieces.king import King
 from pieces.knight import Knight
@@ -50,7 +50,6 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
-                        #self.stop_threads()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if not self.check_click() and self.chosen:
                             clk_x, clk_y = pygame.mouse.get_pos()
@@ -69,13 +68,6 @@ class Game:
                         self.check_click()
 
             self.draw()
-
-    def stop_threads(self):
-        print("stopping threads")
-        for p in (self.white_pieces + self.black_pieces):
-            if type(p) is King:
-                if (p.message_thread.isAlive()):
-                    p.message_thread.join()
                         
     def check_for_mate(self):
         white_king, black_king = False, False
@@ -101,7 +93,7 @@ class Game:
 
 
     def draw(self):
-        
+
         self.draw_board()
         self.draw_text()
         self.draw_pieces()
@@ -162,7 +154,7 @@ class Game:
 
         self.win.blit(self.big_font.render(self.big_update_text, True, text_color), (self.width / 3.75, 10))
 
-        if len(Game.small_update_text) > 17:
+        if len(Game.small_update_text) > len(black_check_message):
             center_text = self.width / 10
         else:
             center_text = self.width / 3.25

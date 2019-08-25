@@ -45,8 +45,10 @@ class Game:
 
             if Game.rules_check:
                 self.big_update_text = colors[self.current_player].capitalize() + "'s Turn"
-                if self.check_for_mate():
-                    pass
+                if not self.has_steps():
+                    Game.rules_check = False
+                if not self.check_for_mate():
+                    Game.rules_check = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
@@ -68,6 +70,38 @@ class Game:
                         self.check_click()
 
             self.draw()
+
+    def has_steps(self):
+
+        white_has, black_has = False, False
+
+        for p in (self.white_pieces + self.black_pieces):
+            for row_num, row in enumerate(self.squares):
+                for square_num, square in enumerate(row):
+                    prev_piece = p.piece_to_kill
+                    if p.check_valid_move(self.white_pieces, self.black_pieces, row_num, square_num):
+                        prev_row, prev_col = p.current_row, p.current_col
+                        p.set_position(row_num, square_num, self.squares[row_num][square_num])
+                        if not p.check_for_check(self.white_pieces, self.black_pieces):
+                            if p.color == colors[0]:
+                                white_has = True
+                            else:
+                                black_has = True
+
+                        p.piece_to_kill = prev_piece
+                        p.set_position(prev_row, prev_col, self.squares[prev_row][prev_col])
+
+        if not white_has:
+            self.big_update_text = "WHITE LOST"
+            Game.small_update_text = ""
+        elif not black_has:
+            self.big_update_text = "BLACK LOST"
+            Game.small_update_text = ""
+
+        return white_has or black_has
+
+        
+            
                         
     def check_for_mate(self):
         white_king, black_king = False, False

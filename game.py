@@ -42,7 +42,6 @@ class Game:
         self.setup_board()
 
         while run:
-            pygame.time.Clock().tick(60)
 
             if Game.rules_check:
                 self.big_update_text = colors[self.current_player].capitalize() + "'s Turn"
@@ -51,6 +50,7 @@ class Game:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
+                        #self.stop_threads()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if not self.check_click() and self.chosen:
                             clk_x, clk_y = pygame.mouse.get_pos()
@@ -70,6 +70,13 @@ class Game:
 
             self.draw()
 
+    def stop_threads(self):
+        print("stopping threads")
+        for p in (self.white_pieces + self.black_pieces):
+            if type(p) is King:
+                if (p.message_thread.isAlive()):
+                    p.message_thread.join()
+                        
     def check_for_mate(self):
         white_king, black_king = False, False
 
@@ -154,7 +161,13 @@ class Game:
             text_color = (0, 0, 0)
 
         self.win.blit(self.big_font.render(self.big_update_text, True, text_color), (self.width / 3.75, 10))
-        self.win.blit(self.small_font.render(Game.small_update_text, True, Game.small_text_color), (self.width / 3.25, 50))
+
+        if len(Game.small_update_text) > 17:
+            center_text = self.width / 10
+        else:
+            center_text = self.width / 3.25
+
+        self.win.blit(self.small_font.render(Game.small_update_text, True, Game.small_text_color), (center_text, 50))
         
 
 

@@ -1,5 +1,6 @@
 import pygame
 import time
+import game
 import threading
 
 colors = ["white", "black"]
@@ -28,6 +29,9 @@ class Piece:
         return x <= square.right and x >= square.left and y >= square.top and y <= square.bottom
 
     def move(self, win, x, y, squares, whites, blacks):
+        from pieces.pawn import Pawn
+        import game
+
         for row_num, row in enumerate(squares):
             for sq_num, sq in enumerate(row):
                 if self.click(win, x, y, sq):
@@ -47,33 +51,45 @@ class Piece:
                         if self.pieces_to_kill and self.piece_to_kill:
                             self.kill()
                         self.set_position(row_num, sq_num, sq)
-
                         self.handle_check_messages(whites, blacks)
+
+                        if type(self) is Pawn:
+                            if self.color == colors[0] and row_num == 0:
+                                # color is white
+                                game.rules_check = False
+                                self.making_promotion = True
+                                self.create_promotion_screen()
+                            elif self.color == colors[1] and row_num == 7:
+                                # color is black
+                                game.rules_check = False
+                                self.making_promotion = True
+                                self.create_promotion_screen()
                         
                         return True
 
         return False
 
+    def create_promotion_screen(self):
+        # defined only in Pawn class
+        pass
 
     def handle_check_messages(self, whites, blacks):
-        from game import Game
 
         for p in (whites + blacks):
             if p.check_for_check(whites, blacks):
                 if p.color == colors[0]:
-                    Game.small_update_text = white_check_message
+                    game.small_update_text = white_check_message
                 else:
-                    Game.small_update_text = black_check_message
+                    game.small_update_text = black_check_message
                 return
 
-        Game.small_update_text = ""
+        game.small_update_text = ""
 
     def cancel_message(self):
-        from game import Game
-        if self.color == colors[1] and Game.small_update_text == white_check_message:
-            Game.small_update_text = ""
-        elif self.color == colors[0] and Game.small_update_text == black_check_message:
-            Game.small_update_text = ""
+        if self.color == colors[1] and game.small_update_text == white_check_message:
+            game.small_update_text = ""
+        elif self.color == colors[0] and game.small_update_text == black_check_message:
+            game.small_update_text = ""
         
     def check_for_check(self, whites, blacks):
         from .king import King
@@ -111,13 +127,12 @@ class Piece:
         self.current_col = col
 
     def set_temp_message(self, message):
-        from game import Game
 
-        prev_message = Game.small_update_text
+        prev_message = game.small_update_text
 
-        Game.small_update_text = message
+        game.small_update_text = message
         time.sleep(2)
-        Game.small_update_text = prev_message
+        game.small_update_text = prev_message
 
     def get_enemy_pieces(self, whites, blacks):
         if self.enemy_color == colors[0]:

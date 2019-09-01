@@ -1,6 +1,7 @@
 import pygame
 import os
 from .piece import Piece, colors
+import game
 
 class Pawn(Piece):
     def __init__(self, color):
@@ -58,31 +59,19 @@ class Pawn(Piece):
             
 
         return True
-
-    def set_position(self, row, col, sq):
-        super().set_position(row, col, sq)
-        if self.color == colors[0] and row == 0:
-            # color is white
-            self.making_promotion = True
-            self.create_promotion_screen()
-        elif self.color == colors[1] and row == 7:
-            # color is black
-            self.making_promotion = True
-            self.create_promotion_screen()
         
 
     def draw(self, win):
         super().draw(win)
 
     def click_promotion(self, x, y, whites, blacks):
-        from game import Game
 
         if self.making_promotion:
             for rect_num, rect in enumerate(self.rects):
                 if x <= rect.right and x >= rect.left and y >= rect.top and y <= rect.bottom:
                     self.possible_selections[rect_num].set_position(self.current_row, self.current_col, self.current_square)
                     self.making_promotion = False
-                    Game.rules_check = True
+                    game.rules_check = True
                     
                     if self.color == colors[0]:
                         # color is white
@@ -113,12 +102,8 @@ class Pawn(Piece):
 
         self.font = pygame.font.SysFont('Comic Sans MS', 25, bold = True)
 
-
     def draw_promotion(self, win):
         if self.making_promotion:
-            from game import Game
-            Game.rules_check = False
-
             pygame.draw.rect(win, (255, 0, 0), self.wide_rect)
 
             for r_num, r in enumerate(self.rects):

@@ -10,11 +10,12 @@ from pieces.pawn import Pawn
 from pieces.queen import Queen
 from pieces.rook import Rook
 
-class Game:
+small_update_text = ""
+rules_check = True
+small_text_color = (0, 0, 0)
+big_text_color = (0, 0, 0)
 
-    small_update_text = ""
-    rules_check = True
-    small_text_color = (0, 0, 0)
+class Game:
 
     def __init__(self):
         pygame.font.init()
@@ -43,12 +44,14 @@ class Game:
 
         while run:
 
-            if Game.rules_check:
+            global rules_check
+
+            if rules_check:
                 self.big_update_text = colors[self.current_player].capitalize() + "'s Turn"
                 if not self.has_steps():
-                    Game.rules_check = False
+                   rules_check = False
                 if not self.check_for_mate():
-                    Game.rules_check = False
+                    rules_check = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
@@ -57,7 +60,7 @@ class Game:
                             clk_x, clk_y = pygame.mouse.get_pos()
                             if self.chosen.move(self.win, clk_x, clk_y, self.squares[:], self.white_pieces, self.black_pieces):
                                 self.chosen = None
-
+                                
                                 if self.current_player == 0:
                                     self.current_player = 1
                                 else:
@@ -77,10 +80,11 @@ class Game:
 
         for p in (self.white_pieces + self.black_pieces):
             for row_num, row in enumerate(self.squares):
-                for square_num, square in enumerate(row):
+                for square_num in range(len(row)):
                     prev_piece = p.piece_to_kill
                     if p.check_valid_move(self.white_pieces, self.black_pieces, row_num, square_num):
                         prev_row, prev_col = p.current_row, p.current_col
+
                         p.set_position(row_num, square_num, self.squares[row_num][square_num])
                         if not p.check_for_check(self.white_pieces, self.black_pieces):
                             if p.color == colors[0]:
@@ -91,12 +95,14 @@ class Game:
                         p.piece_to_kill = prev_piece
                         p.set_position(prev_row, prev_col, self.squares[prev_row][prev_col])
 
+        global small_update_text
+
         if not white_has:
             self.big_update_text = "WHITE LOST"
-            Game.small_update_text = ""
+            small_update_text = ""
         elif not black_has:
             self.big_update_text = "BLACK LOST"
-            Game.small_update_text = ""
+            small_update_text = ""
 
         return white_has or black_has
 
@@ -116,12 +122,14 @@ class Game:
                 black_king = True
                 break
 
+        global small_update_text
+
         if not white_king:
             self.big_update_text = "WHITE LOST"
-            Game.small_update_text = ""
+            small_update_text = ""
         elif not black_king:
             self.big_update_text = "BLACK LOST"
-            Game.small_update_text = ""
+            small_update_text = ""
 
         return white_king and black_king
 
@@ -179,28 +187,31 @@ class Game:
                 self.squares[row][col] = pygame.Rect(self.width - self.square_width * (8-col), self.height - self.square_height * (8-row), self.square_width, self.square_height)
     
     def draw_text(self):
+        global big_text_color
+
         pygame.draw.rect(self.win, (128,128,128), pygame.Rect(0, 0, self.width, 100))
-        
-        if self.current_player == 0:
-            text_color = (255, 255, 255)
-        else:
-            text_color = (0, 0, 0)
 
-        self.win.blit(self.big_font.render(self.big_update_text, True, text_color), (self.width / 3.75, 10))
+        if rules_check:
+            if self.current_player == 0:
+                big_text_color = (255, 255, 255)
+            else:
+                big_text_color = (0, 0, 0)
 
-        if len(Game.small_update_text) > len(black_check_message):
+        self.win.blit(self.big_font.render(self.big_update_text, True, big_text_color), (self.width / 3.75, 10))
+
+        if len(small_update_text) > len(black_check_message):
             center_text = self.width / 10
         else:
             center_text = self.width / 3.25
 
-        self.win.blit(self.small_font.render(Game.small_update_text, True, Game.small_text_color), (center_text, 50))
+        self.win.blit(self.small_font.render(small_update_text, True, small_text_color), (center_text, 50))
         
 
 
     def check_click(self):
         clk_x, clk_y = pygame.mouse.get_pos()
 
-        if Game.rules_check:
+        if rules_check:
             if self.chosen:
                 if self.chosen.color == colors[0]:
                     pieces = self.white_pieces
@@ -229,4 +240,3 @@ class Game:
             for p in (self.white_pieces + self.black_pieces):
                 if type(p) is Pawn:
                     p.click_promotion(clk_x, clk_y, self.white_pieces, self.black_pieces)
-                        

@@ -94,7 +94,10 @@ class Pawn(Piece):
 
         self.current_color_index = colors.index(self.color)
 
-        self.possible_selections = [Queen(self.current_color_index), Rook(self.current_color_index), Bishop(self.current_color_index), Knight(self.current_color_index)]
+        rook = Rook(self.current_color_index)
+        rook.has_moved = True
+
+        self.possible_selections = [Queen(self.current_color_index), rook, Bishop(self.current_color_index), Knight(self.current_color_index)]
         self.rects = []
 
         for rect_num in range(len(self.possible_selections)):

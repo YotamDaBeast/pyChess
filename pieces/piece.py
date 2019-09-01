@@ -30,6 +30,8 @@ class Piece:
 
     def move(self, win, x, y, squares, whites, blacks):
         from pieces.pawn import Pawn
+        from pieces.rook import Rook
+        from pieces.king import King
         import game
 
         for row_num, row in enumerate(squares):
@@ -47,11 +49,33 @@ class Piece:
 
                     self.handle_check_messages(whites, blacks)
 
-                    if self.check_valid_move(whites, blacks, row_num, sq_num):
+                    can_castle = self.check_castling(whites, blacks, row_num, sq_num)
+
+                    if self.check_valid_move(whites, blacks, row_num, sq_num) or can_castle:
                         if self.pieces_to_kill and self.piece_to_kill:
                             self.kill()
                         self.set_position(row_num, sq_num, sq)
                         self.handle_check_messages(whites, blacks)
+
+                        if can_castle:
+                            for p in (whites + blacks):
+                                if type(p) is Rook and p.color == self.color:
+                                    if p.current_col > sq_num:
+                                        prev_row, prev_col, prev_sq = p.current_row, p.current_col, p.current_square
+                                        p.set_position(p.current_row, sq_num - 1, squares[p.current_row][sq_num - 1])
+                                        if self.check_for_check(whites, blacks):
+                                            threading.Thread(target=self.set_temp_message, args=("You can't move to a check position",)).start()
+                                            p.set_position(prev_row, prev_col, prev_sq)
+                                            return False
+                                        break
+                                    else:
+                                        prev_row, prev_col, prev_sq = p.current_row, p.current_col, p.current_square
+                                        p.set_position(p.current_row, sq_num + 1, squares[p.current_row][sq_num + 1])
+                                        if self.check_for_check(whites, blacks):
+                                            threading.Thread(target=self.set_temp_message, args=("You can't move to a check position",)).start()
+                                            p.set_position(prev_row, prev_col, prev_sq)
+                                            return False
+                                        break
 
                         if type(self) is Pawn:
                             if self.color == colors[0] and row_num == 0:
@@ -64,9 +88,15 @@ class Piece:
                                 game.rules_check = False
                                 self.making_promotion = True
                                 self.create_promotion_screen()
-                        
+
+                        elif type(self) is Rook or type(self) is King:
+                            self.has_moved = True
                         return True
 
+        return False
+
+    def check_castling(self, whites, blacks, row, col):
+        # defined only in King class
         return False
 
     def create_promotion_screen(self):

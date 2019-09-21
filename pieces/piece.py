@@ -60,7 +60,7 @@ class Piece:
                         if can_castle:
                             for p in (whites + blacks):
                                 if type(p) is Rook and p.color == self.color:
-                                    if p.current_col > sq_num:
+                                    if sq_num == 6 and p.current_col == 7:
                                         prev_row, prev_col, prev_sq = p.current_row, p.current_col, p.current_square
                                         p.set_position(p.current_row, sq_num - 1, squares[p.current_row][sq_num - 1])
                                         if self.check_for_check(whites, blacks):
@@ -68,7 +68,7 @@ class Piece:
                                             p.set_position(prev_row, prev_col, prev_sq)
                                             return False
                                         break
-                                    else:
+                                    elif sq_num == 2 and p.current_col == 0:
                                         prev_row, prev_col, prev_sq = p.current_row, p.current_col, p.current_square
                                         p.set_position(p.current_row, sq_num + 1, squares[p.current_row][sq_num + 1])
                                         if self.check_for_check(whites, blacks):

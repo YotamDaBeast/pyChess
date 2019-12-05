@@ -61,10 +61,10 @@ class Game:
                             if self.chosen.move(self.win, clk_x, clk_y, self.squares[:], self.white_pieces, self.black_pieces):
                                 self.chosen = None
                                 
-                                # if self.current_player == 0:
-                                #     self.current_player = 1
-                                # else:
-                                #     self.current_player = 0
+                                if self.current_player == 0:
+                                    self.current_player = 1
+                                else:
+                                    self.current_player = 0
             else:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:

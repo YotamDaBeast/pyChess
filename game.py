@@ -14,6 +14,7 @@ small_update_text = ""
 rules_check = True
 small_text_color = (0, 0, 0)
 big_text_color = (0, 0, 0)
+big_update_text = "Chess Game"
 
 class Game:
 
@@ -30,7 +31,6 @@ class Game:
         self.current_player = 0
         self.chosen = None
         self.big_font = pygame.font.SysFont('Comic Sans MS', 30, bold=True)
-        self.big_update_text = "Chess Game"
         self.small_font = pygame.font.SysFont('Comic Sans MS', 20, bold=True)
         pygame.display.set_caption("pyChess")
         pygame.display.set_icon(pygame.transform.scale(pygame.image.load("assets/pieces/black/black_king.png"), (32, 32)))
@@ -45,20 +45,20 @@ class Game:
         while run:
 
             global rules_check
+            global big_update_text
 
             if rules_check:
-                self.big_update_text = colors[self.current_player].capitalize() + "'s Turn"
-                if not self.has_steps():
-                   rules_check = False
-                if not self.check_for_mate():
-                    rules_check = False
+                big_update_text = colors[self.current_player].capitalize() + "'s Turn"
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if not self.check_click() and self.chosen:
                             clk_x, clk_y = pygame.mouse.get_pos()
-                            if self.chosen.move(self.win, clk_x, clk_y, self.squares[:], self.white_pieces, self.black_pieces):
+                            moved, endgame = self.chosen.move(self.win, clk_x, clk_y, self.squares[:], self.white_pieces, self.black_pieces)
+                            if endgame:
+                                rules_check = False
+                            elif moved:
                                 self.chosen = None
                                 
                                 if self.current_player == 0:
@@ -74,64 +74,6 @@ class Game:
 
             self.draw()
 
-    def has_steps(self):
-
-        white_has, black_has = False, False
-
-        for p in (self.white_pieces + self.black_pieces):
-            for row_num, row in enumerate(self.squares):
-                for square_num in range(len(row)):
-                    prev_piece = p.piece_to_kill
-                    if p.check_valid_move(self.white_pieces, self.black_pieces, row_num, square_num):
-                        prev_row, prev_col = p.current_row, p.current_col
-
-                        p.set_position(row_num, square_num, self.squares[row_num][square_num])
-                        if not p.check_for_check(self.white_pieces, self.black_pieces):
-                            if p.color == colors[0]:
-                                white_has = True
-                            else:
-                                black_has = True
-
-                        p.piece_to_kill = prev_piece
-                        p.set_position(prev_row, prev_col, self.squares[prev_row][prev_col])
-
-        global small_update_text
-
-        if not white_has:
-            self.big_update_text = "WHITE LOST"
-            small_update_text = ""
-        elif not black_has:
-            self.big_update_text = "BLACK LOST"
-            small_update_text = ""
-
-        return white_has or black_has
-
-        
-            
-                        
-    def check_for_mate(self):
-        white_king, black_king = False, False
-
-        for white in self.white_pieces:
-            if type(white) is King:
-                white_king = True
-                break
-        
-        for black in self.black_pieces:
-            if type(black) is King:
-                black_king = True
-                break
-
-        global small_update_text
-
-        if not white_king:
-            self.big_update_text = "WHITE LOST"
-            small_update_text = ""
-        elif not black_king:
-            self.big_update_text = "BLACK LOST"
-            small_update_text = ""
-
-        return white_king and black_king
 
 
     def draw(self):
@@ -197,7 +139,7 @@ class Game:
             else:
                 big_text_color = (0, 0, 0)
 
-        self.win.blit(self.big_font.render(self.big_update_text, True, big_text_color), (self.width / 3.75, 10))
+        self.win.blit(self.big_font.render(big_update_text, True, big_text_color), (self.width / 3.75, 10))
 
         if len(small_update_text) > len(black_check_message):
             center_text = self.width / 10
